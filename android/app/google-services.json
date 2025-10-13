@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "595195865155",
+    "project_id": "syriasell-35510",
+    "storage_bucket": "syriasell-35510.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:595195865155:android:0f187ec37f8f3e86cf4cf6",
+        "android_client_info": {
+          "package_name": "com.syriasell.syria_sell"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhOL9Xhyi4p61tnxqFu64fxjCVIIAcT78"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

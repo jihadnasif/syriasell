@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base href="$FLUTTER_BASE_HREF">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, minimum-scale=0.5, maximum-scale=5.0">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="A new Flutter project.">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="syria_sell">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <title>syria_sell</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    #zoom-display {
+      position: fixed;
+      top: 8px;
+      right: 8px;
+      background: rgba(0,0,0,0.6);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-family: sans-serif;
+      font-size: 14px;
+      z-index: 9999;
+      user-select: none;
+    }
+    #zoom-reset-btn {
+      margin-left: 8px;
+      cursor: pointer;
+      background: #fff;
+      color: #000;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-weight: bold;
+    }
+    body {
+      transform-origin: center top;
+    }
+  </style>
+</head>
+<body>
+
+<script src="flutter_bootstrap.js" async></script>
+
+<script>
+  function pickFile(callbackName) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const arrayBuffer = reader.result;
+        const bytes = new Uint8Array(arrayBuffer);
+        window.flutter_inappwebview.callHandler(callbackName, bytes, file.name);
+      };
+      reader.readAsArrayBuffer(file);
+    };
+    input.click();
+  }
+</script>
+
+<script>
+  (function() {
+    let zoom = 1.0;
+    let targetZoom = 1.0;
+    const ZOOM_STEP = 0.1;
+    const ZOOM_MIN = 0.5;
+    const ZOOM_MAX = 2.0;
+    const zoomDisplay = document.getElementById('zoom-display');
+    const resetBtn = document.getElementById('zoom-reset-btn');
+
+    function updateZoomDisplay() {
+      zoomDisplay.firstChild.textContent = 'Zoom: ' + Math.round(zoom*100) + '%';
+    }
+
+    function animateZoom() {
+      const diff = targetZoom - zoom;
+      if (Math.abs(diff) < 0.001) return;
+      zoom += diff * 0.2; // easing factor
+      document.body.style.transform = `scale(${zoom})`;
+      updateZoomDisplay();
+      requestAnimationFrame(animateZoom);
+    }
+
+    function setZoom(newZoom) {
+      targetZoom = Math.min(Math.max(newZoom, ZOOM_MIN), ZOOM_MAX);
+      requestAnimationFrame(animateZoom);
+    }
+
+    function onWheelForZoom(e) {
+      if (!e.ctrlKey) return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+
+      const dir = Math.sign(e.deltaY || 0);
+      if (dir < 0) setZoom(targetZoom + ZOOM_STEP);
+      else if (dir > 0) setZoom(targetZoom - ZOOM_STEP);
+    }
+
+    function addCaptureListener() {
+      document.addEventListener('wheel', onWheelForZoom, { passive: false, capture: true });
+      window.addEventListener('wheel', onWheelForZoom, { passive: false, capture: true });
+    }
+
+    function observeFlutterAndAttach() {
+      const observer = new MutationObserver(() => {
+        const selectors = ['flt-glass-pane', 'flt-platform-view', 'flt-scene', 'canvas', 'flt-canvas'];
+        let found = null;
+        for (const sel of selectors) {
+          const el = document.querySelector(sel);
+          if (el) { found = el; break; }
+        }
+        if (found) {
+          try { found.addEventListener('wheel', onWheelForZoom, { passive: false, capture: true }); }
+          catch(e){ found.addEventListener('wheel', onWheelForZoom, { passive: false }); }
+          observer.disconnect();
+        }
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+    }
+
+    function hookAfterFlutterFrame() {
+      function setupOnce() {
+        addCaptureListener();
+        observeFlutterAndAttach();
+      }
+      window.addEventListener('flutter-first-frame', () => { setupOnce(); }, { once: true });
+      window.addEventListener('load', () => { setTimeout(setupOnce, 300); });
+    }
+
+    hookAfterFlutterFrame();
+
+    resetBtn.addEventListener('click', () => setZoom(1.0));
+
+    // expose for debug
+    window.__flutterZoomControl = {
+      setZoom: (v) => setZoom(v),
+      getZoom: () => zoom,
+      reset: () => setZoom(1.0)
+    };
+
+    updateZoomDisplay();
+  })();
+</script>
+
+</body>
+</html>
