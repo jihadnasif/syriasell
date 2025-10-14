@@ -1,20 +1,19 @@
 platform :ios, '13.0'
 
-# تعطيل إحصائيات CocoaPods
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
-# استخدام frameworks و modular headers لتوافق جميع الـ plugins
 use_frameworks!
 use_modular_headers!
 
-# تحديد مسار مشروع Flutter الرئيسي
-flutter_application_path = '../'
-
-# تحميل ملفات podhelper الخاصة بـ Flutter (تتعامل مع جميع الـ plugins)
-require File.expand_path(File.join(flutter_application_path, 'packages/flutter_tools/bin/podhelper'), __FILE__)
+flutter_application_path = File.expand_path('../flutter', __dir__)
+require File.expand_path(File.join(flutter_application_path, '.ios', 'Flutter', 'podhelper.rb'))
 
 target 'Runner' do
-  install_all_flutter_pods(flutter_application_path)
+  flutter_ios_podfile_setup
+  use_frameworks!
+  use_modular_headers!
+
+  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 end
 
 post_install do |installer|
