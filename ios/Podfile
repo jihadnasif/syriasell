@@ -3,10 +3,22 @@ platform :ios, '13.0'
 # تعطيل إحصائيات CocoaPods
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
-# استخدام الـ frameworks (مطلوب لبعض البودات)
+# استخدام frameworks و modular headers لتوافق جميع الـ plugins
 use_frameworks!
+use_modular_headers!
+
+# تحديد مسار مشروع Flutter الرئيسي
+flutter_application_path = '../'
+
+# تحميل ملفات podhelper الخاصة بـ Flutter (تتعامل مع جميع الـ plugins)
+require File.expand_path(File.join(flutter_application_path, 'packages/flutter_tools/bin/podhelper'), __FILE__)
 
 target 'Runner' do
-  # Pods for Runner
-  # Flutter plugin pods سيتم تثبيتها تلقائيًا عند تشغيل pod install
+  install_all_flutter_pods(flutter_application_path)
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    flutter_additional_ios_build_settings(target)
+  end
 end
