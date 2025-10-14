@@ -1,21 +1,12 @@
-# ios/Podfile
-
 platform :ios, '13.0'
 
-# تحميل البيئة الخاصة بـ Flutter
-# Podfile بدون استخدام ephemeral
-# Flutter iOS pods
-target 'Runner' do
-  use_frameworks!
-  use_modular_headers!
+# تعطيل إحصائيات CocoaPods
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
-  install_all_flutter_pods(File.dirname(File.realpath(__FILE__)))
-end
+# استخدام الـ frameworks (مطلوب لبعض البودات)
+use_frameworks!
 
 target 'Runner' do
-  use_frameworks!
-  use_modular_headers!
-
-  # تثبيت جميع بودات Flutter
-  install_all_flutter_pods(File.dirname(File.realpath(__FILE__)))
+  # Pods for Runner
+  # Flutter plugin pods سيتم تثبيتها تلقائيًا عند تشغيل pod install
 end
