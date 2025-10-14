@@ -1,17 +1,14 @@
-platform :ios, '14.0'
+# ios/Podfile
 
-# Ignore all warnings from all pods
-inhibit_all_warnings!
+platform :ios, '13.0'
 
-use_frameworks!
-use_modular_headers!
+# هذا السطر يربط Flutter مع CocoaPods بطريقة حديثة
+require File.expand_path("../Flutter/ephemeral/flutter_export_environment.rb", __FILE__)
 
 target 'Runner' do
-  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-end
+  use_frameworks!
+  use_modular_headers!
 
-post_install do |installer|
-  installer.pods_project.targets.each do |target|
-    flutter_additional_ios_build_settings(target)
-  end
+  # تثبيت جميع بودات Flutter
+  install_all_flutter_pods(File.dirname(File.realpath(__FILE__)))
 end
