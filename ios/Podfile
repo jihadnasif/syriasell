@@ -3,7 +3,14 @@
 platform :ios, '13.0'
 
 # تحميل البيئة الخاصة بـ Flutter
-require File.expand_path("../Flutter/ephemeral/flutter_export_environment.rb", __FILE__)
+# Podfile بدون استخدام ephemeral
+# Flutter iOS pods
+target 'Runner' do
+  use_frameworks!
+  use_modular_headers!
+
+  install_all_flutter_pods(File.dirname(File.realpath(__FILE__)))
+end
 
 target 'Runner' do
   use_frameworks!
