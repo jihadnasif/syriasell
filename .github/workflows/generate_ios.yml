@@ -1,31 +1,27 @@
-name: Generate iOS Files
-
+name: Build iOS
 on:
   push:
     branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  build_ios:
+  build-ios:
     runs-on: macos-latest
-
+    
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: 3.32.8  # <--- النسخة الثابتة
-
-      - name: Get Flutter dependencies
-        run: flutter pub get
-
-      - name: Build iOS app (generate .ios/Flutter)
-        run: flutter build ios --no-codesign
-
-      - name: Commit generated iOS files
-        run: |
-          git config --global user.email "you@example.com"
-          git config --global user.name "Your Name"
-          git add ios/ .ios/Flutter/
-          git commit -m "Add generated iOS files for Bitrise" || echo "No changes to commit"
-          git push origin main
+    - uses: actions/checkout@v4
+    
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.32.8'
+    
+    - name: Install dependencies
+      run: flutter pub get
+    
+    - name: Generate iOS files
+      run: flutter create --platforms=ios .
+    
+    - name: Build iOS
+      run: flutter build ios --no-codesign
