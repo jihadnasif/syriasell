@@ -7,14 +7,10 @@ use_modular_headers!
 
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
-flutter_root = File.expand_path('..', File.join(__dir__, '../'))
-load File.join(flutter_root, '.flutter-plugins-dependencies') if File.exist?(File.join(flutter_root, '.flutter-plugins-dependencies'))
+flutter_application_path = File.expand_path('.', __dir__)  # يشير لمجلد المشروع نفسه
+podhelper_path = File.join(flutter_application_path, 'Flutter', 'podhelper.rb')
 
 target 'Runner' do
-  # Try to locate podhelper.rb manually if not found
-  flutter_application_path = File.expand_path('../flutter', __dir__)
-  podhelper_path = File.expand_path(File.join(flutter_application_path, '.ios', 'Flutter', 'podhelper.rb'))
-
   if File.exist?(podhelper_path)
     require podhelper_path
     flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
