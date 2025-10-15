@@ -30,8 +30,8 @@ jobs:
       # 5. رفع الملفات المولدة إلى GitHub
       - name: Commit generated iOS files
         run: |
-          git config --global user.email "you@example.com"
-          git config --global user.name "Your Name"
+          git config --global user.email "enjihadnasif@gmail.com"
+          git config --global user.name "jihadnasif"
           git add ios/ .ios/Flutter/
           git commit -m "Add generated iOS files for Bitrise" || echo "No changes to commit"
           git push origin main
