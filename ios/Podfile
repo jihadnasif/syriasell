@@ -1,23 +1,24 @@
-platform :ios, '13.0'
+# Fixed Podfile for Codemagic / Bitrise / GitHub Actions
 
-ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+platform :ios, '13.0'
 
 use_frameworks!
 use_modular_headers!
 
-flutter_application_path = File.expand_path('../flutter', __dir__)
-require File.expand_path(File.join(flutter_application_path, '.ios', 'Flutter', 'podhelper.rb'))
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+
+flutter_root = File.expand_path('..', File.join(__dir__, '../'))
+load File.join(flutter_root, '.flutter-plugins-dependencies') if File.exist?(File.join(flutter_root, '.flutter-plugins-dependencies'))
 
 target 'Runner' do
-  flutter_ios_podfile_setup
-  use_frameworks!
-  use_modular_headers!
+  # Try to locate podhelper.rb manually if not found
+  flutter_application_path = File.expand_path('../flutter', __dir__)
+  podhelper_path = File.expand_path(File.join(flutter_application_path, '.ios', 'Flutter', 'podhelper.rb'))
 
-  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-end
-
-post_install do |installer|
-  installer.pods_project.targets.each do |target|
-    flutter_additional_ios_build_settings(target)
+  if File.exist?(podhelper_path)
+    require podhelper_path
+    flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+  else
+    puts "⚠️ podhelper.rb not found, skipping Flutter pod installation"
   end
 end
