@@ -1,0 +1,37 @@
+name: Generate iOS Files
+
+# تشغيل هذا الـ workflow عند أي push على main
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build_ios:
+    runs-on: macos-latest
+
+    steps:
+      # 1. استنساخ المشروع
+      - uses: actions/checkout@v3
+
+      # 2. تثبيت Flutter
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: stable
+
+      # 3. جلب الحزم
+      - name: Get Flutter dependencies
+        run: flutter pub get
+
+      # 4. بناء iOS بدون توقيع
+      - name: Build iOS app (generate .ios/Flutter)
+        run: flutter build ios --no-codesign
+
+      # 5. رفع الملفات المولدة إلى GitHub
+      - name: Commit generated iOS files
+        run: |
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
+          git add ios/ .ios/Flutter/
+          git commit -m "Add generated iOS files for Bitrise" || echo "No changes to commit"
+          git push origin main
